@@ -5,7 +5,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 # 加载数据
-#为何会有现成的乳腺癌样本
 data = load_breast_cancer()
 X, y = data.data, data.target
 
