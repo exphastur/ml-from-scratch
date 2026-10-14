@@ -138,6 +138,26 @@
     - Xavier长期稳（最终略胜）：平衡前向+反向传播，长期训练更稳定
   - **实战判断标准**：看激活函数（ReLU→Kaiming，Sigmoid/Tanh→Xavier）
 
+### 8. PyTorch 工程基础（Checkpoint + 学习率调度 + 早停）⭐
+- **路径**：`pytorch_basics/`
+- **时间**：2026-10-14
+- **实现**：在 weight_initialization 网络基础上，补齐 PyTorch 工程化三件套
+- **数据集**：MNIST，5层全连接（784→512→256→128→64→10）+ ReLU + Adam 优化器
+- **核心功能**：
+  - **Checkpoint 保存/加载**：支持断点续训，同时存储模型权重 + optimizer 状态（Adam 的 m_t/v_t 动量）
+  - **学习率调度**：ReduceLROnPlateau（验证 loss 连续 3 轮没改善 → lr × 0.5）
+  - **早停机制**：连续 5 轮验证 loss 没改善自动停止训练
+- **实验结果**：
+  - 续训验证：三次连续运行（ep0→ep2→ep5）证明 checkpoint 正确恢复训练状态
+  - 最终 val_loss：0.0652，验证准确率 98.1%
+- **核心收获**：
+  - **`zero_grad()` 必要性**：`backward()` 默认累加梯度而非覆盖，必须手动清零上一批残留
+  - **optimizer 状态的重要性**：不存 Adam 的 m_t/v_t 会导致续训时优化器失去惯性，前几轮剧烈震荡
+  - **`.grad` 是内存属性**：每个参数 Tensor 的 `.grad` 字段存梯度，不是文件，速度快
+  - **train/eval 模式切换**：Dropout 和 BatchNorm 在两种模式下行为不同（训练时随机/当前batch，测试时确定/全局统计）
+  - **全连接网络 vs 卷积网络**：全连接=层间全连接（784×512 条连线），卷积=局部连接
+  - **张量（Tensor）**：n 维数组统称，PyTorch 比 numpy 多了 GPU 加速和自动求导
+
 ---
 
 ## 环境
